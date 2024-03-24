@@ -11,13 +11,13 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
 
     @Override
     public Type getType() {
-        return Type.NONE;
+        return Type.BST;
     }
 
     @Override
     public int size() {
         // TODO: Implement this
-        return 0;
+        return count;
     }
 
     /**
@@ -36,13 +36,14 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
      */
     @Override
     public String getStatus() {
-        String toReturn = "Tree has max depth of " + maxTreeDepth + ".\n";
-        toReturn += "Longest collision chain in a tree node is " + TreeNode.longestCollisionChain + "\n";
+        StringBuilder toReturn1=new StringBuilder("Tree has max depth of " + maxTreeDepth + ".\n");
+        toReturn1.append("Longest collision chain in a tree node is " + TreeNode.longestCollisionChain + "\n");
         TreeAnalyzerVisitor<K, V> visitor = new TreeAnalyzerVisitor<>();
         root.accept(visitor);
-        toReturn += "Min path height to bottom: " + visitor.minHeight + "\n";
-        toReturn += "Max path height to bottom: " + visitor.maxHeight + "\n";
-        toReturn += "Ideal height if balanced: " + Math.ceil(Math.log(count)) + "\n";
+        toReturn1.append("Min path height to bottom: " + visitor.minHeight + "\n");
+        toReturn1.append("Max path height to bottom: " + visitor.maxHeight + "\n");
+        toReturn1.append("Ideal height if balanced: " + Math.ceil(Math.log(count)) + "\n");
+        String toReturn = toReturn1.toString();
         return toReturn;
     }
 
@@ -55,14 +56,37 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
             // update the root node. But it may have children
             // so do not just replace it with this new node but set
             // the keys and values for the already existing root.
-            
-        return false;
+
+        if (key == null || value == null)
+            throw new IllegalArgumentException("Key or value cannot be null");
+
+        if (root == null) {
+            root = new TreeNode<>(key, value);
+            count++;
+            return true;
+        } else {
+            int insertionHash = key.hashCode();
+            int added = root.insert(key, value, insertionHash);
+            if (added == 1) {
+                count++;
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
     public V find(K key) throws IllegalArgumentException {
         // TODO: Implement this. //Think about this
-        return (null);
+        if (key == null)
+            throw new IllegalArgumentException("Key cannot be null");
+
+        if (root == null)
+            return null;
+
+        int searchHash = key.hashCode();
+        return root.find(key, searchHash);
     }
 
     @Override
