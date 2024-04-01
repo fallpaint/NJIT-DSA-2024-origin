@@ -3,30 +3,31 @@ package oy.tol.tra;
 public class QueueImplementation<E> implements QueueInterface<E> {
     private Object [] itemArray;
     private int capacity;
-    private int current = 0;
-    private int head = 0;
-    private int tail = -1;
-    private static final int DEFAULT_STACK_SIZE = 10;
+	private int front;
+	private int rear;
 
+	private int tempElementSize = 0;
+
+	private static final int DEFAULT_QUEUE_SIZE = 10;
     /**
      * Allocates a queue with a default capacity.
      * @throws QueueAllocationException
      */
     public QueueImplementation() throws QueueAllocationException {
-        capacity=DEFAULT_STACK_SIZE;
-        itemArray=new Object[DEFAULT_STACK_SIZE];
-    }
+		this(DEFAULT_QUEUE_SIZE);
+	}
 
     /**
      * @param capacity The capacity of the queue.
      * @throws QueueAllocationException If cannot allocate room for the internal array.
      */
     public QueueImplementation(int capacity) throws QueueAllocationException {
-        if(capacity<2){
+        if(capacity<1){
             throw new QueueAllocationException("Capacity must be at least 2.");
         }
         this.capacity=capacity;
         itemArray=new Object[capacity];
+        front = rear = -1;
     }
 
     @Override
@@ -35,78 +36,115 @@ public class QueueImplementation<E> implements QueueInterface<E> {
     }
 
     @Override
-    public void enqueue(E element) throws QueueAllocationException, NullPointerException {
-        if(current==capacity){
-            Object[] tmp=new Object[this.capacity*2+1];
-            int indexOfItemArray=head;
-            int index=0;
-            int loop=current;
-            while(loop-->0){
-                tmp[index++]=itemArray[indexOfItemArray];
-                indexOfItemArray=(indexOfItemArray+1)%capacity;
-            }
-            head=0;
-            tail=index-1;
-            itemArray=tmp;
-            tmp=null;
-            capacity=capacity*2+1;
-        }
-        if(element==null){
-            throw new NullPointerException();
-        }
-        tail=(tail+1)%capacity;
-        itemArray[tail]=element;
-        current++;
-    }
+	public void enqueue(E element) throws QueueAllocationException, NullPointerException {
+		if (element == null) {
+			throw new NullPointerException("Element cannot be NULL");
+		}
+		if (tempElementSize == capacity) {
+			//todo capacity*2
+			doubleCapacity();
+		}
+		if (isEmpty()) {
+			front = rear = 0;
+		} else {
+			rear = (rear + 1) % capacity;
+		}
+		itemArray[rear] = element;
+		tempElementSize++;
+	}
 
 
     @Override
-    public E dequeue() throws QueueIsEmptyException {
-        E returnE =element();
-        head=(head+1)%capacity;
-        current--;
-        return returnE;
-    }
+    @SuppressWarnings("unchecked")
+	public E dequeue() throws QueueIsEmptyException {
+		if (isEmpty()) {
+			throw new QueueIsEmptyException("Queue is empty");
+		}
+		E element = (E) itemArray[front];
+		tempElementSize--;
+		if (front == rear) {
+			front = rear = -1;
+		} else {
+			front = (front + 1) % capacity;
+		}
+		return element;
+	}
 
     @SuppressWarnings("unchecked")
     @Override
     public E element() throws QueueIsEmptyException {
         if(isEmpty()){
-            throw new QueueIsEmptyException("Cannot dequeue from an empty queue.");
+            throw new QueueIsEmptyException("Queue is empty");
         }
-        return (E)itemArray[head];
+        return (E)itemArray[front];
     }
 
     @Override
-    public int size() {
-        return current;
-    }
+	public int size() {
+		if (isEmpty()) {
+			return 0;
+		}
+		return tempElementSize;
+	}
 
-    @Override
-    public boolean isEmpty() {
-        return current==0;
-    }
+	@Override
+	public boolean isEmpty() {
+		return tempElementSize == 0;
+	}
 
-    @Override
-    public void clear() {
-        head=0;
-        tail=-1;
-        current=0;
-    }
+	@Override
+	public void clear() {
+		front = rear = -1;
+		tempElementSize = 0;
+	}
 
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder("[");
-        int index=head;
-        int loopTime=current;
-        while(loopTime-->0){
-            builder.append(itemArray[index].toString());
-            index=(index+1)%capacity;
-            if(loopTime!=0){
-                builder.append(", ");
-            }
-        }
-        builder.append("]");
-        return builder.toString();
-    }
+	public String toString() {
+		StringBuilder builder = new StringBuilder("[");
+		if (!isEmpty()) {
+			if (front <= rear) {
+				for (int i = front; i <= rear; i++) {
+					builder.append(itemArray[i]);
+					if (i < rear) {
+						builder.append(", ");
+					}
+				}
+			} else {
+				for (int i = front; i < capacity; i++) {
+					builder.append(itemArray[i]);
+					builder.append(", ");
+				}
+				for (int i = 0; i <= rear; i++) {
+					builder.append(itemArray[i]);
+					if (i < rear) {
+						builder.append(", ");
+					}
+				}
+			}
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
+	private void doubleCapacity() throws QueueAllocationException {
+		int newCapacity = capacity * 2;
+		Object[] newArray = new Object[newCapacity];
+		if (front <= rear) {
+			for (int i = 0; i < capacity; i++) {
+				newArray[i] = itemArray[i];
+			}
+		} else {
+			// copy
+			int j = 0;
+			for (int i = front; i < capacity; i++) {
+				newArray[j++] = itemArray[i];
+			}
+			for (int i = 0; i <= rear; i++) {
+				newArray[j++] = itemArray[i];
+			}
+		}
+		itemArray = newArray;
+		front = 0;
+		rear = capacity - 1;
+		capacity = newCapacity;
+	}
 }
