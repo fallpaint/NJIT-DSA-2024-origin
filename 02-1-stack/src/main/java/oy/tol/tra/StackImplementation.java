@@ -38,10 +38,12 @@ public class StackImplementation<E> implements StackInterface<E> {
     */
    public StackImplementation(int capacity) throws StackAllocationException {
       if(capacity<2){ 
-         throw new StackAllocationException("Capacity must be at least 2.");
-      }
-      this.capacity=capacity;
-      itemArray=new Object[capacity];
+         throw new StackAllocationException(" The capacity is small");
+      }else
+      {
+         itemArray = new Object[capacity];
+         this.capacity = itemArray.length;
+   }
    }
 
    @Override
@@ -51,23 +53,26 @@ public class StackImplementation<E> implements StackInterface<E> {
    }
 
    @Override
-   public void push(E element) throws StackAllocationException, NullPointerException {
-      // TODO: Implement this
-      
-      if(size()==capacity()){
-         Object[] newArray=new Object[this.capacity*2+1];
-         for (int i = 0; i < itemArray.length; i++) {
-            newArray[i]=itemArray[i];
-         }
-         itemArray=newArray;
-         newArray=null;
-         capacity=capacity*2+1;
-         }
-         if(element==null){
-            throw new NullPointerException();
-         }
-         itemArray[++currentIndex]=element;      
-      }
+	public void push(E element) throws StackAllocationException, NullPointerException {
+		// TODO: Implement this
+		if(element==null){
+			throw new NullPointerException("Element can not be NULL");
+		}
+       if (currentIndex == capacity - 1) {
+	       int newCapacity = capacity * 2;
+	       Object[] newArray = new Object[newCapacity];
+	       // Copy elements to the new array
+	       for (int i = 0; i < capacity; i++) {
+		       newArray[i] = itemArray[i];
+	       }
+	       itemArray = newArray;
+	       capacity = newCapacity;
+
+       }
+       currentIndex++;
+       itemArray[currentIndex] = element;
+
+	}
                
    
 
@@ -77,9 +82,11 @@ public class StackImplementation<E> implements StackInterface<E> {
       if(isEmpty()){
          throw new StackIsEmptyException("Cannot pop from an empty stack.");
       }
-      return (E)itemArray[currentIndex--];
+      E element = (E) itemArray[currentIndex];
+		itemArray[currentIndex] = null; 
+		currentIndex--;
+		return element;
    }
-   
 
    @SuppressWarnings("unchecked")
    @Override
