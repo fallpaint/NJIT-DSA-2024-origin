@@ -1,41 +1,38 @@
 package oy.tol.tra;
 
+/**
+ * An implementation of the QueueInterface.
+ */
 public class QueueImplementation<E> implements QueueInterface<E> {
-    private Object [] itemArray;
-    private int capacity;
+
+	private Object[] itemArray;
+	private int capacity;
 	private int front;
 	private int rear;
 
 	private int tempElementSize = 0;
 
 	private static final int DEFAULT_QUEUE_SIZE = 10;
-    /**
-     * Allocates a queue with a default capacity.
-     * @throws QueueAllocationException
-     */
-    public QueueImplementation() throws QueueAllocationException {
+
+	public QueueImplementation() throws QueueAllocationException {
 		this(DEFAULT_QUEUE_SIZE);
 	}
 
-    /**
-     * @param capacity The capacity of the queue.
-     * @throws QueueAllocationException If cannot allocate room for the internal array.
-     */
-    public QueueImplementation(int capacity) throws QueueAllocationException {
-        if(capacity<1){
-            throw new QueueAllocationException("Capacity must be at least 2.");
-        }
-        this.capacity=capacity;
-        itemArray=new Object[capacity];
-        front = rear = -1;
-    }
+	public QueueImplementation(int capacity) throws QueueAllocationException {
+		if (capacity < 1) {
+			throw new QueueAllocationException("Invalid capacity");
+		}
+		this.capacity = capacity;
+		itemArray = new Object[capacity];
+		front = rear = -1;
+	}
 
-    @Override
-    public int capacity() {
-        return capacity;
-    }
+	@Override
+	public int capacity() {
+		return capacity;
+	}
 
-    @Override
+	@Override
 	public void enqueue(E element) throws QueueAllocationException, NullPointerException {
 		if (element == null) {
 			throw new NullPointerException("Element cannot be NULL");
@@ -53,9 +50,8 @@ public class QueueImplementation<E> implements QueueInterface<E> {
 		tempElementSize++;
 	}
 
-
-    @Override
-    @SuppressWarnings("unchecked")
+	@Override
+	@SuppressWarnings("unchecked")
 	public E dequeue() throws QueueIsEmptyException {
 		if (isEmpty()) {
 			throw new QueueIsEmptyException("Queue is empty");
@@ -70,16 +66,16 @@ public class QueueImplementation<E> implements QueueInterface<E> {
 		return element;
 	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public E element() throws QueueIsEmptyException {
-        if(isEmpty()){
-            throw new QueueIsEmptyException("Queue is empty");
-        }
-        return (E)itemArray[front];
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public E element() throws QueueIsEmptyException {
+		if (isEmpty()) {
+			throw new QueueIsEmptyException("Queue is empty");
+		}
+		return (E) itemArray[front];
+	}
 
-    @Override
+	@Override
 	public int size() {
 		if (isEmpty()) {
 			return 0;
