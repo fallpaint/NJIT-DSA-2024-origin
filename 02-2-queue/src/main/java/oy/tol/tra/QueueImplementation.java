@@ -50,21 +50,22 @@ public class QueueImplementation<E> implements QueueInterface<E> {
 		tempElementSize++;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public E dequeue() throws QueueIsEmptyException {
-		if (isEmpty()) {
-			throw new QueueIsEmptyException("Queue is empty");
-		}
-		E element = (E) itemArray[front];
-		tempElementSize--;
-		if (front == rear) {
-			front = rear = -1;
-		} else {
-			front = (front + 1) % capacity;
-		}
-		return element;
-	}
+	@Override  
+@SuppressWarnings("unchecked")  
+public E dequeue() throws QueueIsEmptyException {  
+    if (isEmpty()) {  
+        throw new QueueIsEmptyException("Queue is empty");  
+    }  
+    E element = (E) itemArray[front];  
+    itemArray[front] = null;  
+    tempElementSize--;  
+    if (front == rear) {  
+        front = rear = -1;  
+    } else {  
+        front = (front + 1) % capacity;  
+    }  
+    return element;  
+}
 
 	@Override
 	@SuppressWarnings("unchecked")
