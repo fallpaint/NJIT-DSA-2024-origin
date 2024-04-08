@@ -36,14 +36,13 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
      */
     @Override
     public String getStatus() {
-        StringBuilder toReturn1=new StringBuilder("Tree has max depth of " + maxTreeDepth + ".\n");
-        toReturn1.append("Longest collision chain in a tree node is " + TreeNode.longestCollisionChain + "\n");
+        String toReturn = "Tree has max depth of " + maxTreeDepth + ".\n";
+        toReturn += "Longest collision chain in a tree node is " + TreeNode.longestCollisionChain + "\n";
         TreeAnalyzerVisitor<K, V> visitor = new TreeAnalyzerVisitor<>();
         root.accept(visitor);
-        toReturn1.append("Min path height to bottom: " + visitor.minHeight + "\n");
-        toReturn1.append("Max path height to bottom: " + visitor.maxHeight + "\n");
-        toReturn1.append("Ideal height if balanced: " + Math.ceil(Math.log(count)) + "\n");
-        String toReturn = toReturn1.toString();
+        toReturn += "Min path height to bottom: " + visitor.minHeight + "\n";
+        toReturn += "Max path height to bottom: " + visitor.maxHeight + "\n";
+        toReturn += "Ideal height if balanced: " + Math.ceil(Math.log(count)) + "\n";
         return toReturn;
     }
 

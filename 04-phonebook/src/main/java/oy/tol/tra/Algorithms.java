@@ -49,12 +49,6 @@ public class Algorithms {
 		}
 	}
 
-	public static <K extends Comparable<K>, V>  void fastSort(Pair<K, V>[] arr) {
-        if (arr == null || arr.length == 0) {
-            return;
-        }
-        quickSort(arr, 0, arr.length - 1);
-    }
 
 	public static void sortWithComparator(Person[] array, Comparator Comparator) {
 		Arrays.sort(array ,Comparator);
@@ -87,7 +81,9 @@ public class Algorithms {
 			return (top == -1);
 		}
 	}
-
+	public static <E extends Comparable<E>> void fastSort(E[] array){
+		quickSort(array,0,array.length-1);
+	}
 	public static <E extends Comparable<E>> void quickSort(E[] array, int begin, int end) {
 		if (begin >= end) return; // Base case
 
